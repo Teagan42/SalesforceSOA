@@ -1,10 +1,7 @@
 public virtual UnitOfWork
     implements IUnitOfWork
 {
-    public class UnitOfWorkException extends Exception
-    {
-
-    }
+    public class UnitOfWorkException extends Exception {}
 
     private class Relationship
     {
@@ -12,6 +9,13 @@ public virtual UnitOfWork
         public SObjectField relatedToField;
         public SObject relatedTo;
 
+        /**
+         * Instantiate a new relationship instance
+         *
+         * @param record Record that is to be related
+         * @param relatedToField The field on the record that is the foreign key
+         * @param relatedTo The record that is to be related to
+         **/
         public Relationship(SObject record, SObjectField relatedToField, SObject relatedTo)
         {
             this.record = record;
@@ -24,6 +28,9 @@ public virtual UnitOfWork
     {
         private List<Relationship> relationships = new List<Relationship>();
 
+        /**
+         * Relsove all relationships in the list
+         **/
         public void resolve()
         {
             for (Relationship relationship : relationships)
@@ -32,6 +39,13 @@ public virtual UnitOfWork
             }
         }
 
+        /**
+         * Add a relationship to the list
+         *
+         * @param record The record to be related
+         * @param relatedToField The field on the record that is the foreign key
+         * @param relatedTo The record to relate to
+         **/
         public void add(SObject record, SObjectField relatedToField, SObject relatedTo)
         {
             Relationship relationship = new Relationship(record, relatedToField, relatedTo);
@@ -164,7 +178,7 @@ public virtual UnitOfWork
      *
      * @param record An existing or newly created record
      * @param relatedToField A SObjectField referene to the lookup field that relates the two records together
-     * @param relatedTo A SOBject instance (yet to be commited to the database)
+     * @param relatedTo A SObject instance (yet to be commited to the database)
      */
     public void registerRelationship(SObject record, SObjectField relatedToField, SObject relatedTo)
     {
@@ -191,7 +205,7 @@ public virtual UnitOfWork
     }
 
     /**
-     * Register an existing record to be updated during the commitWork method
+     * Register an existing record to be updated during the commitWork phase
      *
      * @param record An existing record
      **/
@@ -214,7 +228,7 @@ public virtual UnitOfWork
     }
 
     /**
-     * Register a list of existing records to be updated during the commitWork method
+     * Register a list of existing records to be updated during the commitWork phase
      *
      * @param records A list of existing records
      **/
@@ -268,26 +282,24 @@ public virtual UnitOfWork
      **/
     public void commitWork()
     {
-        // notify we're starting the commit work
+        // Fire event
         onCommitWorkStarting();
 
-        // Wrap the work in its own transaction
         IRepository.SavePoint sp = repository.getSavePoint();
         Boolean wasSuccessful = false;
 
         try
         {
-            // notify we're starting the database operations
             onDBStarting();
 
-            // Insert by type
+            // Insert all new records by type
             for(SObjectType sObjectType : objectTypes)
             {
                 relationships.get(sObjectType).resolve();
                 repository.doInsert(typeToNewRecords.get(sObjectType));
             }
 
-            // Update by type
+            // Update all dirty records by type
             for(SObjectType sObjectType : objectTypes)
             {
                 repository.doUpdate(typeToDirtyRecords.get(sObjectType).values());
@@ -300,25 +312,21 @@ public virtual UnitOfWork
                 repository.doDelete(typeToDeletedRecords.get(objectTypes[objectIdx--]).values());
             }
 
-            // notify we're done with database operations
+
             onDBFinished();
 
-            // notify we're starting to process registered work
             onDoWorkStarting();
 
-            // Generic work
+            // Execute work executors
             for(IWorkExecutor work : m_workList)
             {
                 work.execute();
             }
 
-            // notify we've completed processing registered work
             onDoWorkFinished();
 
-            // notify we've completed all steps and are in the final stage of completing
             onCommitWorkFinishing();
 
-            // mark tracker to indicate success
             wasSuccessful = true;
         }
         catch (Exception e)
@@ -329,15 +337,14 @@ public virtual UnitOfWork
         }
         finally
         {
-            // notify we're done with commit work
             onCommitWorkFinished(wasSuccessful);
         }
     }
 
     /**
-     * Registers the type to be used for database operations
+     * Registers the type of SObject to be used for database operations
      *
-     * @param sObjectType - The type to register
+     * @param sObjectType The type to register
      **/
     private void handleRegisterType(SObjectType sObjectType)
     {
