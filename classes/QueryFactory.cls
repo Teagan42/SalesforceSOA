@@ -88,9 +88,10 @@ public class QueryFactory
     }
 
     /**
-     * QueryFactory instances will be considered equal if they produce the same SOQL query.
-     * A faster comparison will first be attempted to check if they apply to the same table, and contain the same number of fields selected.
-     * This method will never return true if the provided object is not an instance of QueryFactory.
+     * Considered equal if:
+     * - Tables match
+     * - Field lists match
+     * - SOQL generated match
      *
      * @param obj The object to check equality of.
      **/
@@ -123,10 +124,9 @@ public class QueryFactory
     /**
      * Construct a new QueryFactory instance with no options other than the FROM clause and the relationship.
      * This should be used when constructing a subquery query for addition to a parent query.
-     * Objects created with this constructor cannot be added to another object using the subselectQuery method.
      * You *must* call selectField(s) before {@link #toSOQL} will return a valid, runnable query.
      *
-     * @param relationship the ChildRelationship to be used in the FROM Clause of the resultant Query (when set overrides value of table). This sets the value of {@link #relationship} and {@link #table}.
+     * @param relationship The ChildRelationship to be used in the FROM Clause of the resultant Query (when set overrides value of table). This sets the value of {@link #relationship} and {@link #table}.
      **/
     private QueryFactory(Schema.ChildRelationship relationship)
     {
@@ -145,11 +145,9 @@ public class QueryFactory
     }
 
     /**
-     * This method sets a flag to indicate that this query should have FLS Read
-     * permission enforced.  If this method is not called, the default behavior
-     * is that FLS read permission will not be checked.
+     * Flag enforcement for field level security
      *
-     * @param enforce whether to enforce field level security (read)
+     * @param enforce Flag for whether to enforce field level security (read)
      **/
     public QueryFactory setEnforceFLS(Boolean enforce)
     {
@@ -159,10 +157,9 @@ public class QueryFactory
 
     /**
      * Sets a flag to indicate that this query should have ordered
-     * query fields in the select statement (this at a small cost to performance).
-     * If you are processing large query sets, you should switch this off.
+     * query fields in the select statement
      *
-     * @param whether or not select fields should be sorted in the soql statement.
+     * @param doSort Whether or not select fields should be sorted in the soql statement.
      **/
     public QueryFactory setSortSelectFields(Boolean doSort)
     {
@@ -172,7 +169,6 @@ public class QueryFactory
 
     /**
      * Selects a single field from the SObject specified in {@link #table}.
-     * Selecting fields is idempotent, if this field is already selected calling this method will have no additional impact.
      *
      * @param fieldName The API name of the field to add to the query's SELECT clause.
      **/
@@ -296,7 +292,7 @@ public class QueryFactory
     }
 
     /**
-     * @see #selectFieldSet(Schema.FieldSet,Boolean)
+     * @see #selectFieldSet(FieldSet,Boolean)
      **/
     public QueryFactory selectFieldSet(Schema.FieldSet fieldSet)
     {
@@ -331,6 +327,8 @@ public class QueryFactory
     }
 
     /**
+     * Adds a where condition to the select query
+     *
      * @param conditionExpression Sets the WHERE clause to the string provided. Do not include the "WHERE".
      **/
     public QueryFactory setCondition(String conditionExpression)
@@ -340,7 +338,9 @@ public class QueryFactory
     }
 
     /**
-     * @returns the current value of the WHERE clause, if any, as set by {@link #setCondition}
+     * Get the conditional from the select query
+     *
+     * @return The current value of the WHERE clause, if any, as set by {@link #setCondition}
      **/
     public String getCondition()
     {
@@ -348,6 +348,8 @@ public class QueryFactory
     }
 
     /**
+     * Adds a limit qualifier to the query
+     *
      * @param limitCount if not null causes a LIMIT caluse to be added to the resulting query.
      **/
     public QueryFactory setLimit(Integer limitCount)
@@ -357,7 +359,9 @@ public class QueryFactory
     }
 
     /**
-     * @returns the current value of the LIMIT clause, if any.
+     * Get the limit qualifier for the query
+     *
+     * @return The current value of the LIMIT clause, if any.
      **/
     public Integer getLimit()
     {
@@ -365,6 +369,8 @@ public class QueryFactory
     }
 
     /**
+     * Add an order by clause to the query
+     *
      * @param o an instance of {@link QueryFactory.Ordering} to be added to the query's ORDER BY clause.
      **/
     public QueryFactory addOrdering(Ordering o)
@@ -374,7 +380,9 @@ public class QueryFactory
     }
 
     /**
-     * @returns the list of orderings that will be used as the query's ORDER BY clause. You may remove elements from the returned list, or otherwise mutate it, to remove previously added orderings.
+     * Get the order by clauses from the query.
+     *
+     * @return The list of orderings that will be used as the query's ORDER BY clause.
      **/
     public List<Ordering> getOrderings()
     {
@@ -382,7 +390,9 @@ public class QueryFactory
     }
 
     /**
-     * @returns the selected fields
+     * Get the selected fields from the query.
+     *
+     * @return The selected fields
      **/
     public Set<QueryField> getSelectedFields()
     {
@@ -682,11 +692,6 @@ public class QueryFactory
         return result;
     }
 
-    /**
-     * Create a "deep" clone of this object that can be safely mutated without affecting the cloned instance
-     *
-     * @return a deep clone of this QueryFactory
-     **/
     public QueryFactory deepClone()
     {
         QueryFactory clone = new QueryFactory(this.table)
@@ -725,10 +730,7 @@ public class QueryFactory
                 direction
             );
         }
-        /**
-         * Construct a new ordering instance for use with {@link QueryFactory#addOrdering}
-         * Once constructed it's properties may not be modified.
-         **/
+
         public Ordering(SObjectField field, SortOrder direction)
         {
             this(field, direction, false); //SOQL docs state NULLS FIRST is default behavior
