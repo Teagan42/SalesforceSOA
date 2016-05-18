@@ -16,21 +16,8 @@ public class QueryFactory
     private Integer limitCount;
     private Integer offset;
     private List<Ordering> order;
-    /**
-     * Integrate checking for READ Field Level Security within the selectField(s) methods
-     * This can optionally be enforced (or not) by calling the setEnforceFLS method prior to calling
-     * one of the selectField or selectFieldset methods.
-     **/
     private Boolean enforceFLS;
-
     private Boolean sortSelectFields = true;
-
-    /**
-     * The relationship and  subselectQueryMap variables are used to support subselect queries.  Subselects can be added to
-     * a query, as long as it isn't a subselect query itself.  You may have many subselects inside
-     * a query, but they may only be 1 level deep (no subselect inside a subselect)
-     * to add a subselect, call the subselectQuery method, passing in the ChildRelationship.
-     **/
     private ChildRelationship relationship;
     private Map<ChildRelationship, QueryFactory> subselectQueryMap;
 
