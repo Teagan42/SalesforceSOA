@@ -304,7 +304,7 @@ public abstract class UnitOfWork
         // Fire event
         onCommitWorkStarting();
 
-        IRepository.SavePoint sp = repository.getSavePoint();
+        Savepoint sp = repository.getSavePoint();
         Boolean wasSuccessful = false;
 
         try
