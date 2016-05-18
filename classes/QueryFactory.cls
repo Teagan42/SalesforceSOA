@@ -57,7 +57,7 @@ public class QueryFactory
                     SecurityUtils.checkFieldIsReadable(lastSObjectType, token);
                 }
 
-                if (token != null && i.hasNext() && token.getDescribe().getSOAPType() == Schema.SOAPType.ID)
+                if (token != null && i.hasNext() && token.getDescribe().getSOAPType() == SOAPType.ID)
                 {
                     lastSObjectType = token.getDescribe().getReferenceTo()[0]; //if it's polymorphic doesn't matter which one we get
                     fieldPath.add(token);
@@ -113,7 +113,7 @@ public class QueryFactory
      *
      * @param table The SObject to be used in the FROM clause of the resultant query. This sets the value of {@link #table}.
      **/
-    public QueryFactory(Schema.SObjectType table)
+    public QueryFactory(SObjectType table)
     {
         this.table = table;
         fields = new Set<QueryField>();
@@ -128,7 +128,7 @@ public class QueryFactory
      *
      * @param relationship The ChildRelationship to be used in the FROM Clause of the resultant Query (when set overrides value of table). This sets the value of {@link #relationship} and {@link #table}.
      **/
-    private QueryFactory(Schema.ChildRelationship relationship)
+    private QueryFactory(ChildRelationship relationship)
     {
         this(relationship.getChildSObject());
         this.relationship = relationship;
@@ -294,7 +294,7 @@ public class QueryFactory
     /**
      * @see #selectFieldSet(FieldSet,Boolean)
      **/
-    public QueryFactory selectFieldSet(Schema.FieldSet fieldSet)
+    public QueryFactory selectFieldSet(FieldSet fieldSet)
     {
         return selectFieldSet(fieldSet,true);
     }
@@ -306,14 +306,14 @@ public class QueryFactory
      * @param allowCrossObject if false this method will throw an exception if any fields in the field set reference fields on a related record.
      * @exception InvalidFieldSetException if the fieldset is invalid for table {@code fields}.
      **/
-    public QueryFactory selectFieldSet(Schema.FieldSet fieldSet, Boolean allowCrossObject)
+    public QueryFactory selectFieldSet(FieldSet fieldSet, Boolean allowCrossObject)
     {
         if (fieldSet.getSObjectType() != table)
         {
             throw new InvalidFieldSetException('Field set "'+fieldSet.getName()+'" is not for SObject type "'+table+'"');
         }
 
-        for (Schema.FieldSetMember field: fieldSet.getFields())
+        for (FieldSetMember field : fieldSet.getFields())
         {
             if (!allowCrossObject && field.getFieldPath().contains('.'))
             {
@@ -512,9 +512,9 @@ public class QueryFactory
      *
      * @param objType The object type of the child relationship to get
      **/
-    private Schema.ChildRelationship getChildRelationship(sObjectType objType)
+    private ChildRelationship getChildRelationship(sObjectType objType)
     {
-        for (Schema.ChildRelationship childRow : table.getDescribe().getChildRelationships())
+        for (ChildRelationship childRow : table.getDescribe().getChildRelationships())
         {
             //occasionally on some standard objects (Like Contact child of Contact) do not have a relationship name.
             //if there is no relationship name, we cannot query on it, so throw an exception.
@@ -532,9 +532,9 @@ public class QueryFactory
      *
      * @param relationshipName The name of the object's ChildRelationship on get
      **/
-    private Schema.ChildRelationship getChildRelationship(String relationshipName)
+    private ChildRelationship getChildRelationship(String relationshipName)
     {
-        for (Schema.ChildRelationship childRow : table.getDescribe().getChildRelationships())
+        for (ChildRelationship childRow : table.getDescribe().getChildRelationships())
         {
             if (childRow.getRelationshipName() == relationshipName)
             {
@@ -699,11 +699,11 @@ public class QueryFactory
             .setCondition(this.conditionExpression)
             .setEnforceFLS(this.enforceFLS);
 
-        Map<Schema.ChildRelationship, QueryFactory> subqueries = this.subselectQueryMap;
+        Map<ChildRelationship, QueryFactory> subqueries = this.subselectQueryMap;
         if (subqueries != null)
         {
-            Map<Schema.ChildRelationship, QueryFactory> clonedSubqueries = new Map<Schema.ChildRelationship, QueryFactory>();
-            for (Schema.ChildRelationship key : subqueries.keySet())
+            Map<ChildRelationship, QueryFactory> clonedSubqueries = new Map<ChildRelationship, QueryFactory>();
+            for (ChildRelationship key : subqueries.keySet())
             {
                 clonedSubqueries.put(key, subqueries.get(key).deepClone());
             }
