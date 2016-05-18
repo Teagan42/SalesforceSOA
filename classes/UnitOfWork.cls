@@ -1,5 +1,4 @@
-public virtual UnitOfWork
-    implements IUnitOfWork
+public abstract class UnitOfWork
 {
     public class UnitOfWorkException extends Exception {}
 
