@@ -60,6 +60,26 @@ public abstract class UnitOfWork
     private Map<SObjectType, Relationships> typeToRelationships = new Map<SObjectType, Relationships>();
     private List<IWorkExecutor> workExecutors = new List<IWorkExecutor>();
 
+    public List<SObject> getNewRecords(SObjectType forType)
+    {
+        return typeToNewRecords.get(forType).clone();
+    }
+
+    public Map<Id, SObject> getDirtyRecords(SObjectType forType)
+    {
+        return typeToDirtyRecords.get(forType).clone();
+    }
+
+    public Map<Id, SObject> getDeletedRecords(SObjectType forType)
+    {
+        return typeToDeletedRecords.get(forType).clone();
+    }
+
+    public List<IWorkExecutor> getWorkExecutors()
+    {
+        return workExecutors.clone();
+    }
+
     /**
      * Default implementation of the on register type event
      **/
