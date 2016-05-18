@@ -175,12 +175,12 @@ public abstract class UnitOfWork
             throw new UnitOfWorkException('Only new records can be registered as new.');
         }
 
-        SObjectType sObjectType = record.getSObjectType()
+        SObjectType sObjectType = record.getSObjectType();
         if (!typeToNewRecords.containsKey(sObjectType))
         {
             throw new UnitOfWorkException(String.format(
                 'SObject type {0} is not supported by this unit of work',
-                new String[] { sObjectType }));
+                new String[] { sObjectType.getDescribe().getName() }));
         }
 
         typeToNewRecords.get(sObjectType).add(record);
@@ -207,7 +207,7 @@ public abstract class UnitOfWork
         {
             throw new UnitOfWorkException(String.format(
                 'SObject type {0} is not supported by this unit of work',
-                new String[] { sObjectType }));
+                new String[] { sObjectType.getDescribe().getName() }));
         }
 
         relationships.get(sObjectType).add(record, relatedToField, relatedTo);
@@ -241,7 +241,7 @@ public abstract class UnitOfWork
         {
             throw new UnitOfWorkException(String.format(
                 'SObject type {0} is not supported by this unit of work',
-                new String[] { sObjectType }));
+                new String[] { sObjectType.getDescribe().getName() }));
         }
         typeToDirtyRecords.get(sObjectType).put(record.Id, record);
     }
@@ -277,7 +277,7 @@ public abstract class UnitOfWork
         {
             throw new UnitOfWorkException(String.format(
                 'SObject type {0} is not supported by this unit of work',
-                new String[] { sObjectType }));
+                new String[] { sObjectType.getDescribe().getName() }));
         }
 
         typeToDeletedRecords.get(sObjectType).put(record.Id, record);
