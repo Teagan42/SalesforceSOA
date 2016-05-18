@@ -55,9 +55,9 @@ public abstract class UnitOfWork
     private IRepository repository;
     private List<SObjectType> objectTypes = new List<SObjectType>();
     private Map<SObjectType, List<SObject>> typeToNewRecords = new Map<SObjectType, List<SObject>>();
-    private Map<SObjectType, List<SObject>> typeToDirtyRecords = new Map<SObjectType, List<SObject>>();
-    private Map<SObjectType, List<SObject>> typeToDeletedRecords = new Map<SObjectType, List<SObject>>();
-    private Map<SObjectType, Relationships> typeToRelationships = new Map<SObjectType, Relationships>();
+    private Map<SObjectType, Map<Id, SObject>> typeToDirtyRecords = new Map<SObjectType, Map<Id, SObject>>();
+    private Map<SObjectType, Map<Id, SObject>> typeToDeletedRecords = new Map<SObjectType, Map<Id, SObject>>();
+    private Map<SObjectType, Relationships> relationships = new Map<SObjectType, Relationships>();
     private List<IWorkExecutor> workExecutors = new List<IWorkExecutor>();
 
     public List<SObject> getNewRecords(SObjectType forType)
