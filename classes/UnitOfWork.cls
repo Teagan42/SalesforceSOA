@@ -230,7 +230,7 @@ public abstract class UnitOfWork
      **/
     public void registerDirty(SObject record)
     {
-        if (String.isBlank(record.Id)
+        if (String.isBlank(record.Id))
         {
             throw new UnitOfWorkException('New records cannot be registered as dirty');
         }
