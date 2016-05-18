@@ -59,7 +59,7 @@ public class QueryFactory
 
                 if (token != null && i.hasNext() && token.getDescribe().getSOAPType() == SOAPType.ID)
                 {
-                    lastSObjectType = token.getDescribe().getReferenceTo()[0]; //if it's polymorphic doesn't matter which one we get
+                    lastSObjectType = token.getDescribe().getReferenceTo()[0];
                     fieldPath.add(token);
                 }
                 else if (token != null && !i.hasNext())
@@ -174,7 +174,7 @@ public class QueryFactory
      **/
     public QueryFactory selectField(String fieldName)
     {
-        fields.add( getFieldToken(fieldName) );
+        fields.add(getFieldToken(fieldName));
         return this;
     }
 
@@ -212,7 +212,7 @@ public class QueryFactory
         List<String> fieldList = new List<String>();
         Set<QueryField> toAdd = new Set<QueryField>();
 
-        for (String fieldName:fieldNames)
+        for (String fieldName : fieldNames)
         {
             toAdd.add(getFieldToken(fieldName));
         }
@@ -231,7 +231,7 @@ public class QueryFactory
     {
         Set<QueryField> toAdd = new Set<QueryField>();
 
-        for (String fieldName:fieldNames)
+        for (String fieldName : fieldNames)
         {
             toAdd.add(getFieldToken(fieldName));
         }
@@ -249,7 +249,7 @@ public class QueryFactory
      **/
     public QueryFactory selectFields(Set<SObjectField> fields)
     {
-        for (SObjectField token:fields)
+        for (SObjectField token : fields)
         {
             if (token == null)
             {
@@ -274,7 +274,7 @@ public class QueryFactory
      **/
     public QueryFactory selectFields(List<SObjectField> fields)
     {
-        for (SObjectField token:fields)
+        for (SObjectField token : fields)
         {
             if (token == null)
             {
@@ -916,9 +916,9 @@ public class QueryFactory
     public class InvalidFieldException extends Exception
     {
         private String fieldName;
-        private Schema.SObjectType objectType;
+        private SObjectType objectType;
 
-        public InvalidFieldException(String fieldname, Schema.SObjectType objectType)
+        public InvalidFieldException(String fieldname, SObjectType objectType)
         {
             this.objectType = objectType;
             this.fieldName = fieldName;
