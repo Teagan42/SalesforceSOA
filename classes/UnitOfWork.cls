@@ -337,7 +337,7 @@ public abstract class UnitOfWork
             onDoWorkStarting();
 
             // Execute work executors
-            for(IWorkExecutor work : m_workList)
+            for(IWorkExecutor work : workExecutors)
             {
                 work.execute();
             }
