@@ -325,7 +325,7 @@ public abstract class UnitOfWork
             }
 
             // Delete by type (in reverse dependency order)
-            Integer objectIdx = m_sObjectTypes.size() - 1;
+            Integer objectIdx = objectTypes.size() - 1;
             while (objectIdx >= 0)
             {
                 repository.doDelete(typeToDeletedRecords.get(objectTypes[objectIdx--]).values());
